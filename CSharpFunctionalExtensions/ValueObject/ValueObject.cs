@@ -108,14 +108,16 @@ namespace CSharpFunctionalExtensions
             object[] components = GetEqualityComponents().ToArray();
             object[] otherComponents = other.GetEqualityComponents().ToArray();
 
-            for (int i = 0; i < components.Length; i++)
+            int commonLength = Math.Min(components.Length, otherComponents.Length);
+
+            for (int i = 0; i < commonLength; i++)
             {
                 int comparison = CompareComponents(components[i], otherComponents[i]);
                 if (comparison != 0)
                     return comparison;
             }
 
-            return 0;
+            return components.Length - otherComponents.Length;
         }
 
         private int CompareComponents(object object1, object object2)

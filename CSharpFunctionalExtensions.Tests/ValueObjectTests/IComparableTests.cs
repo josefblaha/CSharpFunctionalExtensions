@@ -106,6 +106,20 @@ namespace CSharpFunctionalExtensions.Tests.ValueObjectTests
             result2.Should().NotBe(0);
         }
 
+        [Fact]
+        public void Compares_value_objects_with_collections_lexicographically()
+        {
+            var vo1 = new VOWithCollectionWithoutLength("one", "two");
+            var vo2 = new VOWithCollectionWithoutLength("one", "two", "three");
+
+            int result1 = vo1.CompareTo(vo2);
+            int result2 = vo2.CompareTo(vo1);
+
+            // shorter means smaller
+            result1.Should().BeNegative();
+            result2.Should().BePositive();
+        }
+
         private class VOWithCollection : ValueObject
         {
             readonly string[] _components;
@@ -118,6 +132,24 @@ namespace CSharpFunctionalExtensions.Tests.ValueObjectTests
             protected override IEnumerable<object> GetEqualityComponents()
             {
                 yield return _components.Length;
+                foreach (string component in _components)
+                {
+                    yield return component;
+                }
+            }
+        }
+
+        private class VOWithCollectionWithoutLength : ValueObject
+        {
+            readonly string[] _components;
+
+            public VOWithCollectionWithoutLength(params string[] components)
+            {
+                _components = components;
+            }
+
+            protected override IEnumerable<object> GetEqualityComponents()
+            {
                 foreach (string component in _components)
                 {
                     yield return component;
